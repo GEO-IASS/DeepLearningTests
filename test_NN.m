@@ -32,7 +32,7 @@ opts.numepochs          = 5;                %  Number of full sweeps through dat
 opts.batchsize          = 100;                        %  Take a mean gradient step over this many samples
 opts.plot               = 0;                           %  enable plotting
 nn.trained_epochs = 0;
-for nn_index = 1:100
+for nn_index = 1:75
 
 nn = nntrain(nn, train_x, train_y, opts);                %  nntrain takes validation set as last two arguments (optionally)
 [er, bad] = nntest(nn, test_x, test_y);
@@ -47,6 +47,22 @@ nns = [nns, nn];
 opts_list = [opts_list, opts];
 
 end
-save('NN_epochs_test_5.mat');
+
+
+res.nns.trained_epochs = [nns.trained_epochs];
+res.nns.final_er = [nns.finalErr];
+res.size = nns(1).size;
+res.activation_function = nns(1).activation_function;
+res.learning_rate = nns(1).learningRate;
+res.momentum = nns(1).momentum;
+res.scaling_learningRate = nns(1).scaling_learningRate;
+res.weightPenaltyL2 = nns(1).weightPenaltyL2;
+res.nonSparsityPenalty = nns(1).nonSparsityPenalty;
+res.sparsityTarget = nns(1).sparsityTarget;
+res.inputZeroMaskedFraction = nns(1).inputZeroMaskedFraction;
+res.dropoutFraction = nns(1).dropoutFraction;
+res.output = nns(1).output;
+res.testing = nns(1).testing;
+save('NN_epochs_test_5.mat', 'res', 'opts_list', 'bestErr', 'bestNN');
 
 %assert(er < 0.02, 'Too big error');
