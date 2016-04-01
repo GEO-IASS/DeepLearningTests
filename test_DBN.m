@@ -1,3 +1,4 @@
+function [dbn] = test_DBN(ds,dbn_opts)
 %load mnist_uint8;
 
 %train_x = double(train_x) / 255;
@@ -15,10 +16,8 @@
 %dbn = dbnsetup(dbn, train_x, opts);
 %dbn = dbntrain(dbn, train_x, opts);
 %figure; visualize(dbn.rbm{1}.W');   %  Visualize the RBM weights
-load('py2mat100.mat');
 %%  ex2 train a 100-100 hidden unit DBN and use its weights to initialize a NN
-train_x = lda_train_data(1:11200,:);
-
+global batch_size;
 rand('state',0)
 bestErr = 1; % 100% error before first
 dbns = [];
@@ -31,16 +30,16 @@ bestNN = 1;
 	%rng(0, 'twister');
 	%n_layers = randi([1,6],1,1);
 	%train dbn
-	dbn.sizes = [50,50,50,50,50];
-	opts.numepochs =   10;
+	dbn.sizes = dbn_opts.layers;
+	opts.numepochs =   dbn_opts.epochs;
 	%dbn.sizes = randi([100,1000],1,n_layers);
 	%opts.numepochs = randi([3,5], 1,1);
 
-	opts.batchsize = 100;
-	opts.momentum  =  0;
-	opts.alpha     =  0.1;
-	dbn = dbnsetup(dbn, train_x, opts);
-	dbn = dbntrain(dbn, train_x, opts);
+	opts.batchsize = batch_size;
+	opts.momentum  =  dbn_opts.momentum;
+	opts.alpha     =  dbn_opts.learning_rate;
+	dbn = dbnsetup(dbn, ds.X, opts);
+	dbn = dbntrain(dbn, ds.X, opts);
 
 % 	%unfold dbn to nn
 % 	nn = dbnunfoldtonn(dbn, 10);
@@ -83,3 +82,4 @@ bestNN = 1;
 % save('DBN_epochs_test_5.mat', 'res', 'opts_list', 'bestErr', 'bestNN');
 
 %assert(er < 0.10, 'Too big error');
+end
