@@ -38,8 +38,8 @@ bestNN = 1;
 	opts.batchsize = batch_size;
 	opts.momentum  =  dbn_opts.momentum;
 	opts.alpha     =  dbn_opts.learning_rate;
-	dbn = dbnsetup(dbn, ds.X, opts);
-	dbn = dbntrain(dbn, ds.X, opts);
+	dbn = dbnsetup(dbn, ds.train_x_unlabled, opts);
+	dbn = dbntrain(dbn, ds.train_x_unlabled, opts);
 
 % 	%unfold dbn to nn
 % 	nn = dbnunfoldtonn(dbn, 10);

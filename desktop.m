@@ -1,36 +1,49 @@
 % use this file to do all the messy work
 
+pre_loaded_dbn = 1; %set to 1 if the pre training of dbn is already done
+
 %% initialization
-load '20news_w100.mat';
+load 'mnist_uint8.mat';
 global batch_size;
 global test_interval;
-batch_size = 20;
-test_interval = 5;
-gd_epochs = 400;
-Y = softmaxifyY(newsgroups');
-X = double(full(documents'));
-ds = createDataSet(X,Y,1,length(X)/400);
+batch_size = 50;
+test_interval = 2;
+%Y = softmaxifyY(newsgroups');
+
+%X = double(full(documents'));
+%ds = createDataSet(X,Y,1,length(X)/400);
+ds.test_x = double(test_x) / 255;
+ds.test_y = double(test_y);
+ds.train_x = double(train_x(1:100,:)) / 255;
+ds.train_y = double(train_y(1:100,:));
+ds.train_x_unlabled = double(train_x) / 255;
 gd_opts = struct;
-gd_opts.layers = [100];
-gd_opts.epochs = 400;
+gd_opts.layers = [2500 2000 1500 1000 500];
+gd_opts.epochs = 350;
 
 %% train MLP
-gd_opts.momentum = 1/8;
-gd_opts.learning_rate = .2;
+gd_opts.momentum = 1/2;
+gd_opts.learning_rate = .01;
 
-mlp = test_NN(ds,gd_opts);
-mlp_final_err = mlp.finalErr;
+nns = test_NN(ds,gd_opts);
+save_results(nns, gd_opts, 'Results/NN_9.mat');
+%mlp_final_err = mlp.finalErr;
 %% pre train DBN
 dbn_opts = struct;
 dbn_opts.momentum = 1/2;
-dbn_opts.learning_rate = 1;
-dbn_opts.epochs = 50;
-
-dbn_opts.layers = gd_opts.layers;
-dbn = test_DBN(ds,dbn_opts);
+dbn_opts.learning_rate = 2;
+dbn_opts.epochs = 100;
+if(pre_loaded_dbn==0)
+    dbn_opts.layers = gd_opts.layers;
+    dbn = test_DBN(ds,dbn_opts);
+end
 %% fine tune DBN
-gd_opts.momentum = .1;
-gd_opts.learning_rate = .1;
+gd_opts.momentum = .5;
+gd_opts.learning_rate = 2;
 
-nn = FineTuneDBN(dbn,ds,gd_opts);
-dbn_final_err = nn.final_er;
+dbns = FineTuneDBN(dbn,ds,gd_opts);
+%dbn_final_err = nn.final_er;
+save_results(dbns, struct, 'Results/DBN_9.mat');
+
+%% Plot
+plot_res(nns,dbns);
