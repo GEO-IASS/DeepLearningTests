@@ -48,7 +48,7 @@ for nn_index = 1:mlp_opts.epochs / test_interval
         best_nn.val_er = val_er;
         epochs_since_best_nn = 0;
     elseif epochs_since_best_nn <= early_stop_epochs
-        fprintf('epochs since best_nn = %n\n',epochs_since_best_nn);
+        fprintf('epochs since best_nn = %d\n',epochs_since_best_nn);
        epochs_since_best_nn = epochs_since_best_nn + test_interval;
     else
         fprintf('%n epochs of no better results, stoping early\n',epochs_since_best_nn);
