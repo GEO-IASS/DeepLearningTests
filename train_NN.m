@@ -28,15 +28,15 @@ best_nn.val_er = 1;
 epochs = [];
 val_ers = [];
 train_ers = [];
-early_stop_epochs = 10;
+early_stop_epochs = 30;
 
 %% Algorithm
 for nn_index = 1:mlp_opts.epochs / test_interval
     nn = nntrain(nn, ds.train_x, ds.train_y, opts);                %  nntrain takes validation set as last two arguments (optionally)
     [val_er, ~] = nntest(nn, ds.val_x, ds.val_y);
     [train_er,~] = nntest(nn, ds.train_x, ds.train_y);
-    val_ers = [val_er,val_ers];
-    train_ers = [train_er,train_ers];
+    val_ers = [val_ers,val_er];
+    train_ers = [train_ers,train_er];
     epoch = nn_index * test_interval;
     fprintf('epoch = %d\n',epoch);
     epochs = [epoch,epochs];
@@ -48,7 +48,7 @@ for nn_index = 1:mlp_opts.epochs / test_interval
         best_nn.val_er = val_er;
         epochs_since_best_nn = 0;
     elseif epochs_since_best_nn <= early_stop_epochs
-        fprintf('epochs since best_nn = %n\n',epochs_since_best_nn);
+        fprintf('epochs since best_nn = %d\n',epochs_since_best_nn);
        epochs_since_best_nn = epochs_since_best_nn + test_interval;
     else
         fprintf('%n epochs of no better results, stoping early\n',epochs_since_best_nn);
