@@ -51,7 +51,7 @@ for nn_index = 1:mlp_opts.epochs / test_interval
         fprintf('epochs since best_nn = %d\n',epochs_since_best_nn);
        epochs_since_best_nn = epochs_since_best_nn + test_interval;
     else
-        fprintf('%n epochs of no better results, stoping early\n',epochs_since_best_nn);
+        fprintf('%d epochs of no better results, stoping early\n',epochs_since_best_nn);
         break;
     end
 end
