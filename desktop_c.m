@@ -16,7 +16,7 @@ hidden_layers = {[500,500,1000],[1500,2000,3000],[3000,4000,6000]};
 mlp_learning_rates = {[.0001,.001,.01,.1],[.0001,.001,.01,.1],[.0001,.001,.01,.1]};
 dbn_learning_rates = {[.1],[.1],[.1]};
 ddbn_learning_rates = mlp_learning_rates;
-labels = [.006,.01,.1,1];
+labels = [.006,.01,.1,1,.2,.5];
 base_folder = 'Results/Rectangles';
 dbn_base_opts = struct;
 dbn_base_opts.momentum = 0;
@@ -69,18 +69,30 @@ for i = 1:size(hidden_layers,2)
         for learning_rate = mlp_learning_rates{i}
             gd_opts.momentum = .1;
             gd_opts.learning_rate = learning_rate;
-            nn_res = train_NN(ds,gd_opts);
-            save(sprintf('%s/MLP lr=%g mo=%g.mat',lables_base_folder...
-                ,gd_opts.learning_rate,gd_opts.momentum),'nn_res');
+            mlp_file_name = sprintf('%s/MLP lr=%g mo=%g.mat',lables_base_folder...
+                ,gd_opts.learning_rate,gd_opts.momentum);
+            if exist(mlp_file_name,'file') == 2
+                fprintf('%s already exists, ignoring\n',mlp_file_name);
+            else
+                fprintf('%s does not exists, starting gd training\n',mlp_file_name);
+                nn_res = train_NN(ds,gd_opts);
+                save(mlp_file_name,'nn_res');
+            end
         end
         %% fine tune DBNs
         
         for learning_rate = ddbn_learning_rates{i}
             gd_opts.momentum = .1;
             gd_opts.learning_rate = learning_rate;
-            dbn_res = train_NN(ds,gd_opts,dbnunfoldtonn(dbn,size(ds.train_y,2)));
-            save(sprintf('%s/DDBN lr=%g mo=%g.mat',lables_base_folder...
-                ,gd_opts.learning_rate,gd_opts.momentum),'dbn_res');
+            ddbn_file_name = sprintf('%s/DDBN lr=%g mo=%g.mat',lables_base_folder...
+                ,gd_opts.learning_rate,gd_opts.momentum);
+            if exist(ddbn_file_name,'file') == 2
+                fprintf('%s already exists, ignoring\n',ddbn_file_name);
+            else
+                fprintf('%s does not exists, starting gd training\n',ddbn_file_name);
+                dbn_res = train_NN(ds,gd_opts,dbnunfoldtonn(dbn,size(ds.train_y,2)));
+                save(ddbn_file_name,'dbn_res');
+            end
         end
     end
 end
