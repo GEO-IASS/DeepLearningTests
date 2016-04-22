@@ -1,3 +1,9 @@
+% This script will run all architectures with all lables amounts with the specifyed
+% learning rates for the respective architecture and save the results in a
+% manner so that only comparable results are saved in the same dir.
+% if previous results already exist, it will not redo them.
+
+
 %% Load data
 if not(exist('train'))
     train = load('rectangles_im_train.amat');
