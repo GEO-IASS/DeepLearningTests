@@ -47,7 +47,7 @@ for nn_index = 1:mlp_opts.epochs / test_interval
         best_nn = nn;
         best_nn.val_er = val_er;
         epochs_since_best_nn = 0;
-    elseif epochs_since_best_nn <= gd_opts.early_stop
+    elseif epochs_since_best_nn <= mlp_opts.early_stop
         fprintf('epochs since best_nn = %d\n',epochs_since_best_nn);
        epochs_since_best_nn = epochs_since_best_nn + test_interval;
     else
