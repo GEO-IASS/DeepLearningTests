@@ -36,22 +36,26 @@ classdef ptp
         end
         
         function createBarMultiplot(base,winners)
-            fig = figure('visible','off');
-            x = {};
-            y = [];
-            for i = 1:size(winners,2)
+            n_architectures = size(winners,2);
+            n_labels_per_arch = size(winners{1},2);
+            x = cell(1,n_architectures);
+            y = zeros(n_architectures,n_labels_per_arch);
+            for i = 1:n_architectures
                 architecture = winners{i};
-                %x{end + 1} = mat2str(architecture{1}{1});
-                label = architecture{i};
-                yRow = zeros(1,size(architecture,2));
-                for j = 1:size(architecture,2)    
+                x{i} = mat2str(architecture{1}{1}.hidden_layers);
+                for j = 1:n_labels_per_arch
+                    label = architecture{j};
                     if iscell(label)
-                        ddbn = label{1};
-                        mlp = label{2};
-                        
+                        y(i,j) = label{2}.test_er - label{1}.test_er;
                     end
                 end
             end
+            fig = figure('visible','off');
+            bar(y);
+            ax = gca;
+            ax.XTickLabel = x;
+            plot_path = sprintf('%s/bar_plot.png',base);
+            saveas(fig,plot_path,'png');
         end
         %Prints the given plotData in one plot with a row for each
         %architecture and a column for each label.
@@ -80,7 +84,7 @@ classdef ptp
                             %,fliplr(mlp.epochs),mlp.train_ers,'r--'...
                             %,fliplr(ddbn.epochs),ddbn.train_ers,'g--'...
                         %);
-                        title(sprintf('%s %g',mat2str(ddbn.hidden_layers),ddbn.label));
+                        %title(sprintf('%s %g',mat2str(ddbn.hidden_layers),ddbn.label));
                         %legend('mlp validation','mlp train','ddbn validation','ddbn train');                    
                     end
                 end
