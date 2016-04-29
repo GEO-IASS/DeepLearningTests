@@ -54,6 +54,11 @@ classdef ptp
             bar(y);
             ax = gca;
             ax.XTickLabel = x;
+            ledg = cell(1,n_labels_per_arch);
+            for i = 1:n_labels_per_arch
+                ledg{i} = num2str(sprintf('%g%% ',winners{1}{i}{1}.label * 100));
+            end
+            legend(ledg);
             plot_path = sprintf('%s/bar_plot.png',base);
             saveas(fig,plot_path,'png');
         end
